@@ -67,7 +67,7 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "hasky": {
+    "husky": {
       "hooks": {
         "pre-commit": "lint-staged"
       }
