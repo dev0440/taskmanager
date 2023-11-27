@@ -67,14 +67,14 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "husky": {
-      "hooks": {
-        "pre-commit": "lint-staged"
-      }
-    },
-    "lint-staged": {
-      "*": "npm run lint"
+    "testEnvironment": "node"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npx lint-staged"
     }
+  },
+  "lint-staged": {
+    "*": ["npm run lint", "git add"]
   }
 }
