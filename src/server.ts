@@ -1,9 +1,20 @@
 import Fastify from 'fastify';
 
-const fastify = Fastify({});
+const app = Fastify({
+  logger: {
+    level: 'info',
+  },
+});
 
-fastify.get('/', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Hellooh');
 });
 
-fastify.listen({ port: 3000 });
+app.listen({ port: 3000 }, (err, address) => {
+  if (err) {
+    app.log.error(err);
+    process.exit(1);
+  } else {
+    console.log(`Server listening on ${address}`);
+  }
+});
