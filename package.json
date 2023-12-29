@@ -5,9 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "test": "jest",
     "test:watch": "jest --watch",
     "start:watch": "nodemon --watch src src/server.ts",
-    "format": "prettier src --write",
+    "format": "prettier src --check",
+    "format:write": "prettier src --write",
     "lint": "eslint --ext .ts src",
     "prepare": "husky install"
   },
@@ -42,6 +44,6 @@
     }
   },
   "lint-staged": {
-    "*": "eslint"
+    "*": "npm run lint && npm run format"
   }
 }
