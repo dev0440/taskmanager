@@ -6,8 +6,8 @@ const app = Fastify({
   },
 });
 
-app.get('/', (req, res) => {
-  res.send('Hellooh');
+app.get('/', (__, res) => {
+  res.send('Hello World!!!');
 });
 
 app.listen({ port: 3000 }, (err, address) => {

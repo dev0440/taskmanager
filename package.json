@@ -15,10 +15,6 @@
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dev0440/taskmanager/issues"
-  },
-  "homepage": "https://github.com/dev0440/taskmanager#readme",
   "dependencies": {
     "fastify": "^4.24.3"
   },
