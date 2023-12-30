@@ -1,0 +1,14 @@
+name: Lint & prettier rules ckeck
+
+on: [push]
+jobs:
+  lint-and-pretier-ckeck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/ckeckout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format
