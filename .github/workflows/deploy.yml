@@ -11,4 +11,4 @@ jobs:
     runs-on: self-hosted
     needs: testing
     steps:
-      - run: echo: 'It works'
+      - run: echo 'It works'
