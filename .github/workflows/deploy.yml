@@ -1,0 +1,14 @@
+name: Deploy app
+
+on:
+  push:
+    branches:
+      - 1-setup-project-template
+jobs:
+  testing:
+    uses: ./.github/workflows/lint.yml
+  deploy:
+    runs-on: self-hosted
+    needs: testing
+    steps:
+      echo: 'It works'
