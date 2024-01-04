@@ -3,7 +3,7 @@ name: Lint & prettier rules ckeck
 on: [push]
 jobs:
   lint-and-pretier-ckeck:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
