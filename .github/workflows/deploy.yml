@@ -6,7 +6,7 @@ on:
       - 1-setup-project-template
 jobs:
   testing:
-    uses: ./.github/workflows/lint.yml
+    uses: ./.github/workflows/test-base.yml
   deploy:
     runs-on: self-hosted
     needs: testing
