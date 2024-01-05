@@ -7,7 +7,7 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
-docker build --tag andriihub/taskmanager:latest ..
+docker build --tag andriihub/taskmanager:latest .
 
 if [ $? != 0 ]; then
 	echo 'Build failed'
