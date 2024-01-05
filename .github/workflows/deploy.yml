@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: ./deploy.sh
+      - run: ./scripts/deploy.sh
   deploy:
     runs-on: self-hosted
     needs: testing
