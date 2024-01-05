@@ -1,17 +1,5 @@
 #!/bin/sh
 
-echo $DOCKERHUB_ACCESS_TOKEN | docker login -u andriihub --password-stdin
+ssh ec2-user@ec2-3-87-142-99.compute-1.amazonaws.com
 
-if [ $? != 0 ]; then
-	echo 'Login failed'
-	exit 1
-fi
-
-docker build --tag andriihub/taskmanager:latest .
-
-if [ $? != 0 ]; then
-	echo 'Build failed'
-	exit 1
-fi
-
-docker push andriihub/taskmanager:latest
+echo pwd
