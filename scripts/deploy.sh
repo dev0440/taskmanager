@@ -2,4 +2,10 @@
 
 echo $DOCKERHUB_ACCESS_TOKEN | docker login -u andriihub --password-stdin
 
-echo $?
+if [ $? != 0 ]; then
+	echo 'Login failed'
+	exit 1
+fi
+
+docker build --tag andriihub/taskmanager:latest ..
+docker push andriihub/taskmanager:latest

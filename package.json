@@ -7,7 +7,9 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "start:watch": "nodemon --watch src src/server.ts",
+    "start:dev": "nodemon --watch src src/server.ts",
+    "build": "tsc",
+    "start": "node build/server.js",
     "format": "prettier src --check",
     "format:write": "prettier src --write",
     "lint": "eslint --ext .ts src",
