@@ -7,6 +7,10 @@ on:
 jobs:
   testing:
     uses: ./.github/workflows/test-base.yml
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: docker --version
   deploy:
     runs-on: self-hosted
     needs: testing
