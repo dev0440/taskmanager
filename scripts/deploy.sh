@@ -8,4 +8,10 @@ if [ $? != 0 ]; then
 fi
 
 docker build --tag andriihub/taskmanager:latest ..
+
+if [ $? != 0 ]; then
+	echo 'Build failed'
+	exit 1
+fi
+
 docker push andriihub/taskmanager:latest
