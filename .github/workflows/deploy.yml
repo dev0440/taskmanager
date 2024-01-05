@@ -8,7 +8,6 @@ env:
   DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
   AWS_ACCESS_TOKEN: ${{ secrets.AWS_ACCESS_TOKEN}}
 jobs:
-jobs:
   testing:
     uses: ./.github/workflows/test-base.yml
   build:
