@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - 1-setup-project-template
+env:
+  DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 jobs:
   testing:
     uses: ./.github/workflows/test-base.yml
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: docker --version
+      - run: ./deploy.sh
   deploy:
     runs-on: self-hosted
     needs: testing
