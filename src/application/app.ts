@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import { registerRoutes } from './routes/register';
 
 export function build() {
   const app = Fastify({
@@ -6,6 +7,8 @@ export function build() {
       level: 'info',
     },
   });
+
+  registerRoutes(app);
 
   let counter = 0;
 

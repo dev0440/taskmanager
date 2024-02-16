@@ -1,12 +1,8 @@
-import { FastifyInstance, FastifyRequest, RouteOptions } from 'fastify';
+import { FastifyInstance, RouteOptions } from 'fastify';
 
 interface ISignup {
   email: string;
   password: string;
-}
-
-interface SignupRquest extends FastifyRequest {
-  Body: ISignup;
 }
 
 export default function (
@@ -14,13 +10,18 @@ export default function (
   opts: RouteOptions,
   done: () => void,
 ) {
-  fastify.post<SignupRquest>('/signup', (req, res) => {
-    // const body = req.body;
-    // const email = body.email;
-    // const password = body.password;
+  fastify.route<{
+    Body: ISignup;
+  }>({
+    url: '/signup',
+    method: 'POST',
+    handler: (req, res) => {
+      const { email, password } = req.body;
 
-    res.send('ok');
+      console.log(email, password);
+
+      res.send('ok');
+    },
   });
-
   done();
 }
