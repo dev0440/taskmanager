@@ -15,12 +15,12 @@ export default function (
   }>({
     url: '/signup',
     method: 'POST',
-    handler: (req, res) => {
+    handler: async (req) => {
       const { email, password } = req.body;
 
-      console.log(email, password);
+      const token = await fastify.userService.signup({ email, password });
 
-      res.send('ok');
+      return { token };
     },
   });
   done();
