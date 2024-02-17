@@ -5,6 +5,7 @@ interface User {
 }
 
 type JWTToken = string;
+
 interface UserStinupDTO {
   email: string;
   password: string;

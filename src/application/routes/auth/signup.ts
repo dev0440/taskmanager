@@ -1,8 +1,15 @@
 import { FastifyInstance, RouteOptions } from 'fastify';
+import { UserService } from '../../../core/types';
 
 interface ISignup {
   email: string;
   password: string;
+}
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    userService: UserService;
+  }
 }
 
 export default function (
