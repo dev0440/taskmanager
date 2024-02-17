@@ -9,13 +9,9 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "strictNullChecks": true,
-    "skipLibCheck": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/core/types/index.d.ts",
-      "./src/application/types/index.d.ts"
-    ]
+    "skipLibCheck": true
   },
+  "exclude": ["src/**/*.spec.ts", "*.spec.ts"],
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"

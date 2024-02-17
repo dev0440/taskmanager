@@ -1,10 +1,11 @@
+import { faker } from '@faker-js/faker';
 import fastify, { FastifyInstance } from 'fastify';
 import signup from './signup';
 
-const mockToken = 'd82c1ea9a0ja9fg3';
+const expectedToken = faker.string.sample();
 const signupImpl = jest
   .fn()
-  .mockImplementation(() => Promise.resolve(mockToken));
+  .mockImplementation(() => Promise.resolve(expectedToken));
 
 describe('Signup routes', () => {
   let server: FastifyInstance;
@@ -31,7 +32,7 @@ describe('Signup routes', () => {
     expect(signupImpl).toHaveBeenCalledWith(body);
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual({
-      token: mockToken,
+      token: expectedToken,
     });
   });
 });
