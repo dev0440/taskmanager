@@ -1,5 +1,6 @@
-import { FastifyInstance, RouteOptions } from 'fastify';
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { UserService } from '../../../core/types';
+import { HTTPError } from '../../common/errors';
 
 interface ISignup {
   email: string;
@@ -14,7 +15,7 @@ declare module 'fastify' {
 
 export default function (
   fastify: FastifyInstance,
-  opts: RouteOptions,
+  __: FastifyPluginOptions,
   done: () => void,
 ) {
   fastify.route<{
@@ -25,9 +26,15 @@ export default function (
     handler: async (req) => {
       const { email, password } = req.body;
 
-      const token = await fastify.userService.signup({ email, password });
-
-      return { token };
+      try {
+        const token = await fastify.userService.signup({ email, password });
+        return { token };
+      } catch (err) {
+        if (err instanceof HTTPError) {
+          throw err;
+        }
+        throw HTTPError.internalError();
+      }
     },
   });
   done();

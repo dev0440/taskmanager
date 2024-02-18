@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker';
-import fastify, { FastifyInstance } from 'fastify';
+import { App } from '../../app';
+import { FastifyInstance } from 'fastify';
 import signup from './signup';
+import { HTTPError } from '../../common/errors';
 
 const token = faker.string.sample();
 const password = faker.internet.password();
@@ -12,8 +14,7 @@ describe('Signup routes', () => {
   let server: FastifyInstance;
 
   beforeAll(() => {
-    server = fastify({});
-    server.register(signup);
+    server = new App([], [signup], {}).getServer();
     server.userService = { signup: signupImpl };
   });
 
@@ -25,7 +26,7 @@ describe('Signup routes', () => {
     const body = { email, password };
 
     const res = await server.inject({
-      method: 'POST',
+      method: 'post',
       path: '/signup',
       body,
     });
@@ -35,5 +36,23 @@ describe('Signup routes', () => {
     expect(res.json()).toEqual({
       token,
     });
+  });
+
+  it('should reject signup ', async () => {
+    const body = { email, password };
+
+    const error = new HTTPError(409, 'Already exists');
+
+    signupImpl.mockRestore();
+    signupImpl.mockRejectedValue(error);
+
+    const res = await server.inject({
+      method: 'post',
+      path: '/signup',
+      body,
+    });
+
+    expect(res.statusCode).toEqual(error.code);
+    expect(res.json()).toEqual({ error: error.message });
   });
 });
