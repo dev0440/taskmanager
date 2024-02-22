@@ -17,7 +17,7 @@ export class App {
   ) {
     this.server = Fastify(options);
 
-    this.server.decorateReply('errorHandler', errorHandler);
+    this.applyErrHandlers();
 
     for (const plugin of plugins) {
       this.server.register(plugin);
@@ -27,6 +27,9 @@ export class App {
     }
   }
 
+  applyErrHandlers() {
+    this.server.decorateReply('errorHandler', errorHandler);
+  }
   getServer() {
     return this.server;
   }

@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import { Either } from '../../../core/common/Either';
 import signup from './signup';
 import { AuthFailures } from '../../../core/modules/user/failures';
+import { HTTP_ERRORS } from '../../plugins/errors';
 
 const token = faker.string.sample();
 const password = faker.internet.password();
@@ -57,7 +58,8 @@ describe('Signup routes', () => {
       body,
     });
 
-    expect(res.statusCode).toEqual(409);
-    expect(res.json()).toEqual({ message: 'User already exists' });
+    const expectedResponse = HTTP_ERRORS[AuthFailures.UserAlreadyExistsFailure];
+    expect(res.statusCode).toEqual(expectedResponse.code);
+    expect(res.json()).toEqual({ message: expectedResponse.message });
   });
 });

@@ -1,7 +1,7 @@
 import { HttpResponseService } from '../common/errors';
 import { AuthFailures } from '../../core/modules/user/failures';
 
-const HTTP_ERRORS = {
+export const HTTP_ERRORS = {
   [AuthFailures.UserAlreadyExistsFailure]: {
     code: 409,
     message: 'User already exists',
