@@ -4,7 +4,8 @@ import Fastify, {
   FastifyServerOptions,
 } from 'fastify';
 import signupRoute from './routes/auth/signup';
-import { HTTPError } from './common/errors';
+
+import { errorHandler } from './plugins/errors';
 
 export class App {
   server: FastifyInstance;
@@ -16,16 +17,14 @@ export class App {
   ) {
     this.server = Fastify(options);
 
+    this.server.decorateReply('errorHandler', errorHandler);
+
     for (const plugin of plugins) {
       this.server.register(plugin);
     }
     for (const route of routes) {
       this.server.register(route);
     }
-
-    this.server.setErrorHandler((err: HTTPError, __, res) => {
-      res.status(err.code).send({ error: err.message });
-    });
   }
 
   getServer() {

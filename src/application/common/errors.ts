@@ -1,13 +1,28 @@
-export class HTTPError extends Error {
+import { Failure } from '../../core/common/errors';
+
+interface HttpErrorRsponse {
   code: number;
   message: string;
+}
 
-  constructor(code: number, message: string) {
-    super();
-    this.code = code;
-    this.message = message;
+type HttpErrors<T extends string> = {
+  [Prop in T]: HttpErrorRsponse;
+};
+
+export class HttpResponseService<E extends string> {
+  private httpErrors: HttpErrors<E>;
+
+  constructor(httpErrors: HttpErrors<E>) {
+    this.httpErrors = httpErrors;
   }
-  static internalError() {
-    return new HTTPError(500, 'Internal server error');
+
+  of(failure: Failure<E>): HttpErrorRsponse {
+    if (this.httpErrors[failure.type]) {
+      return this.httpErrors[failure.type];
+    }
+    return {
+      code: 500,
+      message: 'Internal server error',
+    };
   }
 }

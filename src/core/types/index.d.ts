@@ -12,5 +12,7 @@ interface UserStinupDTO {
 }
 
 export interface UserService {
-  signup(userSignupDTO: UserStinupDTO): Promise<JWTToken>;
+  signup(
+    userSignupDTO: UserStinupDTO,
+  ): Promise<Either<Failure<AuthFailure>, JWTToken>>;
 }

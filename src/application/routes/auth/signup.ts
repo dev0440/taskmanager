@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { UserService } from '../../../core/types';
-import { HTTPError } from '../../common/errors';
 
 interface ISignup {
   email: string;
@@ -23,18 +22,17 @@ export default function (
   }>({
     url: '/signup',
     method: 'POST',
-    handler: async (req) => {
+    handler: async (req, rep) => {
       const { email, password } = req.body;
 
-      try {
-        const token = await fastify.userService.signup({ email, password });
-        return { token };
-      } catch (err) {
-        if (err instanceof HTTPError) {
-          throw err;
-        }
-        throw HTTPError.internalError();
+      const res = await fastify.userService.signup({ email, password });
+
+      if (res.isRight()) {
+        return { token: res.getRight() };
       }
+
+      const { code, message } = rep.errorHandler.of(res.getLeft());
+      rep.code(code).send({ message });
     },
   });
   done();

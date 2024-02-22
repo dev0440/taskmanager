@@ -1,8 +1,4 @@
-export class Exception extends Error {
-  constructor(
-    public reason: string,
-    public message: string,
-  ) {
-    super();
-  }
+export interface Failure<FailureType extends string> {
+  type: FailureType;
+  reason: string;
 }

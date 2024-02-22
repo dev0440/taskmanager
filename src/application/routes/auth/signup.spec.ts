@@ -1,14 +1,17 @@
 import { faker } from '@faker-js/faker';
 import { App } from '../../app';
 import { FastifyInstance } from 'fastify';
+import { Either } from '../../../core/common/Either';
 import signup from './signup';
-import { HTTPError } from '../../common/errors';
+import { AuthFailures } from '../../../core/modules/user/failures';
 
 const token = faker.string.sample();
 const password = faker.internet.password();
 const email = faker.internet.email();
 
-const signupImpl = jest.fn().mockImplementation(() => Promise.resolve(token));
+const signupImpl = jest
+  .fn()
+  .mockImplementation(() => Promise.resolve(Either.of(null, token)));
 
 describe('Signup routes', () => {
   let server: FastifyInstance;
@@ -41,10 +44,12 @@ describe('Signup routes', () => {
   it('should reject signup ', async () => {
     const body = { email, password };
 
-    const error = new HTTPError(409, 'Already exists');
-
     signupImpl.mockRestore();
-    signupImpl.mockRejectedValue(error);
+    signupImpl.mockResolvedValue(
+      Either.of({
+        type: AuthFailures.UserAlreadyExistsFailure,
+      }),
+    );
 
     const res = await server.inject({
       method: 'post',
@@ -52,7 +57,7 @@ describe('Signup routes', () => {
       body,
     });
 
-    expect(res.statusCode).toEqual(error.code);
-    expect(res.json()).toEqual({ error: error.message });
+    expect(res.statusCode).toEqual(409);
+    expect(res.json()).toEqual({ message: 'User already exists' });
   });
 });
