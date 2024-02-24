@@ -7,26 +7,32 @@ const email = faker.internet.email();
 const password = faker.internet.password();
 const hash = faker.string.sample();
 const salt = faker.string.sample();
+
 const saltBuf = Buffer.from(salt);
+const hashBuf = Buffer.from(hash);
 
 const mockRandom = jest.fn().mockImplementation(() => {
   return saltBuf;
 });
 
 const mockScryptSync = jest.fn().mockImplementation(() => {
-  return hash;
+  return hashBuf;
 });
+
+jest.spyOn(crypto, 'randomBytes').mockImplementation(mockRandom);
+jest.spyOn(crypto, 'scryptSync').mockImplementation(mockScryptSync);
 
 describe('Signup', () => {
   let signupUsecase: SignupUseCase;
 
   beforeEach(() => {
-    jest.spyOn(crypto, 'randomBytes').mockImplementation(mockRandom);
-    jest.spyOn(crypto, 'scryptSync').mockImplementation(mockScryptSync);
     signupUsecase = new SignupUseCase();
   });
 
-  afterEach(() => {});
+  afterEach(() => {
+    mockRandom.mockReset();
+    mockScryptSync.mockReset();
+  });
 
   it('Should sign up user', async () => {
     const res = await signupUsecase.execute({
@@ -46,7 +52,7 @@ describe('Signup', () => {
 
     expect(res).toEqual(
       Right.of({
-        token: hash,
+        password: `${hashBuf.toString('hex')}:${saltBuf.toString('hex')}`,
       }),
     );
   });

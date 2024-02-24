@@ -14,8 +14,9 @@ export class SignupUseCase
     password,
   }: SignupParams): PromiseEither<AuthFailures, SignupResult> {
     const salt = randomBytes(8).toString('hex');
-    const hash = scryptSync(password, salt, 64);
+    const hash = scryptSync(password, salt, 64).toString('hex');
+    const hashed = `${hash}:${salt}`;
 
-    return Promise.resolve(Right.of({ token: hash.toString('hex') }));
+    return Promise.resolve(Right.of({ password: hashed }));
   }
 }

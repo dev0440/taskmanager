@@ -4,5 +4,5 @@ export interface SignupParams {
 }
 
 export interface SignupResult {
-  token: string;
+  password: string;
 }
