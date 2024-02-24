@@ -1,22 +1,38 @@
 import { Failure } from '../../core/common/errors';
+import { AuthFailures } from '../../core/modules/user/auth/failures';
 
-interface HttpErrorRsponse {
+interface HttpErrorResponse {
   code: number;
   message: string;
 }
 
-type HttpErrors<T extends string> = {
-  [Prop in T]: HttpErrorRsponse;
+type AllFailures = AuthFailures;
+
+type HttpErrors = {
+  [key in AllFailures]: HttpErrorResponse;
 };
 
-export class HttpResponseService<E extends string> {
-  private httpErrors: HttpErrors<E>;
+export const HTTP_ERRORS = {
+  [AuthFailures.UserAlreadyExistsFailure]: {
+    code: 409,
+    message: 'User already exists',
+  },
+};
 
-  constructor(httpErrors: HttpErrors<E>) {
-    this.httpErrors = httpErrors;
+declare module 'fastify' {
+  interface FastifyReply {
+    errorFormatter: HttpErrorFormatter;
+  }
+}
+
+export class HttpErrorFormatter {
+  private httpErrors: HttpErrors;
+
+  constructor() {
+    this.httpErrors = HTTP_ERRORS;
   }
 
-  of(failure: Failure<E>): HttpErrorRsponse {
+  of(failure: Failure<AllFailures>): HttpErrorResponse {
     if (this.httpErrors[failure.type]) {
       return this.httpErrors[failure.type];
     }

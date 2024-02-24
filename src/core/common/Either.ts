@@ -1,28 +1,60 @@
-export class Either<L, R> {
-  right?: R;
-  left?: L;
+export abstract class Either<L, R> {
+  abstract getLeft(): L | null;
+  abstract getRight(): R | null;
+  abstract isLeft(): boolean;
+  abstract isRight(): boolean;
+}
 
-  constructor(l: L, r?: R) {
-    if (l) {
-      this.left = l;
-    } else if (r) {
-      this.right = r;
-    }
+export class Right<R> extends Either<null, R> {
+  private value: R;
+
+  constructor(value: R) {
+    super();
+    this.value = value;
   }
+
+  static of<T>(value: T) {
+    return new Right(value);
+  }
+
   isRight(): boolean {
-    return !!this.right && !this.left;
+    return true;
   }
   isLeft(): boolean {
-    return !!this.left && !this.right;
-  }
-  getRight(): R | undefined {
-    return this.right;
-  }
-  getLeft(): L | undefined {
-    return this.left;
+    return false;
   }
 
-  static of<L, R>(l: L, r?: R) {
-    return new Either(l, r);
+  getRight(): R {
+    return this.value;
+  }
+  getLeft(): null {
+    return null;
+  }
+}
+
+export class Left<L> extends Either<L, null> {
+  private value: L;
+
+  constructor(value: L) {
+    super();
+    this.value = value;
+  }
+
+  static of<T>(value: T) {
+    return new Left(value);
+  }
+
+  isRight(): boolean {
+    return false;
+  }
+  isLeft(): boolean {
+    return true;
+  }
+
+  getRight(): null {
+    return null;
+  }
+  getLeft(): L {
+    return this.value;
   }
 }

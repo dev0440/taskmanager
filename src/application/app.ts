@@ -5,7 +5,7 @@ import Fastify, {
 } from 'fastify';
 import signupRoute from './routes/auth/signup';
 
-import { errorHandler } from './plugins/errors';
+import { HttpErrorFormatter } from './common/errors';
 
 export class App {
   server: FastifyInstance;
@@ -17,7 +17,7 @@ export class App {
   ) {
     this.server = Fastify(options);
 
-    this.applyErrHandlers();
+    this.applyDecorators();
 
     for (const plugin of plugins) {
       this.server.register(plugin);
@@ -27,9 +27,11 @@ export class App {
     }
   }
 
-  applyErrHandlers() {
-    this.server.decorateReply('errorHandler', errorHandler);
+  applyDecorators() {
+    const errorFormatter = new HttpErrorFormatter();
+    this.server.decorateReply('errorFormatter', errorFormatter);
   }
+
   getServer() {
     return this.server;
   }

@@ -3,8 +3,8 @@ import { App } from '../../app';
 import { FastifyInstance } from 'fastify';
 import { Either } from '../../../core/common/Either';
 import signup from './signup';
-import { AuthFailures } from '../../../core/modules/user/failures';
-import { HTTP_ERRORS } from '../../plugins/errors';
+import { AuthFailures } from '../../../core/modules/user/auth/failures';
+import { HTTP_ERRORS } from '../../common/errors';
 
 const token = faker.string.sample();
 const password = faker.internet.password();
@@ -19,7 +19,7 @@ describe('Signup routes', () => {
 
   beforeAll(() => {
     server = new App([], [signup], {}).getServer();
-    server.userService = { signup: signupImpl };
+    server.signup = { execute: signupImpl };
   });
 
   afterEach(() => {

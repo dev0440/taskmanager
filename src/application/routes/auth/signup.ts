@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { UserService } from '../../../core/types';
+import { SignupUseCase } from '../../../core/modules/user/auth/signup';
 
 interface ISignup {
   email: string;
@@ -8,7 +8,7 @@ interface ISignup {
 
 declare module 'fastify' {
   interface FastifyInstance {
-    userService: UserService;
+    signup: SignupUseCase;
   }
 }
 
@@ -25,14 +25,14 @@ export default function (
     handler: async (req, rep) => {
       const { email, password } = req.body;
 
-      const res = await fastify.userService.signup({ email, password });
+      const res = await fastify.signup.execute({ email, password });
 
-      if (res.isRight()) {
-        return { token: res.getRight() };
+      if (res.isLeft()) {
+        const { code, message } = rep.errorFormatter.of(res.getLeft()!);
+        return rep.code(code).send({ message });
       }
 
-      const { code, message } = rep.errorHandler.of(res.getLeft());
-      rep.code(code).send({ message });
+      return { token: res.getRight() };
     },
   });
   done();
