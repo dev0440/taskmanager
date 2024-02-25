@@ -22,6 +22,20 @@ export function signupRoutes(
   }>({
     url: '/signup',
     method: 'POST',
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          password: {
+            type: 'string',
+          },
+          email: {
+            type: 'string',
+          },
+        },
+        required: ['password', 'email'],
+      },
+    },
     handler: async (req, rep) => {
       const { email, password } = req.body;
 
