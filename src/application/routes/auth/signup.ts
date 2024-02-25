@@ -1,31 +1,31 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { SignupUseCase } from '../../../core/modules/user/auth/signup';
-
-interface ISignup {
-  email: string;
-  password: string;
-}
+import { SignupParams } from '../../../core/modules/user/auth/types';
 
 declare module 'fastify' {
   interface FastifyInstance {
-    signup: SignupUseCase;
+    auth: {
+      signup: SignupUseCase;
+    };
   }
 }
 
-export default function (
+export function signupRoutes(
   fastify: FastifyInstance,
   __: FastifyPluginOptions,
   done: () => void,
 ) {
+  fastify.decorate('auth', { signup: new SignupUseCase() });
+
   fastify.route<{
-    Body: ISignup;
+    Body: SignupParams;
   }>({
     url: '/signup',
     method: 'POST',
     handler: async (req, rep) => {
       const { email, password } = req.body;
 
-      const res = await fastify.signup.execute({ email, password });
+      const res = await fastify.auth.signup.execute({ email, password });
 
       if (res.isLeft()) {
         const { code, message } = rep.errorFormatter.of(res.getLeft()!);

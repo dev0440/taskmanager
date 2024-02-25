@@ -3,7 +3,7 @@ import Fastify, {
   FastifyPluginCallback,
   FastifyServerOptions,
 } from 'fastify';
-import signupRoute from './routes/auth/signup';
+import { signupRoutes } from './routes/auth/signup';
 
 import { HttpErrorFormatter } from './common/errors';
 
@@ -38,7 +38,7 @@ export class App {
 }
 
 export function build() {
-  const app = new App([], [signupRoute], {
+  const app = new App([], [signupRoutes], {
     logger: {
       level: 'info',
     },

@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
+import { SignupUseCase } from '../../../core/modules/user/auth/signup';
 import { App } from '../../app';
 import { FastifyInstance } from 'fastify';
-import { Either } from '../../../core/common/Either';
-import signup from './signup';
+import { Left, Right } from '../../../core/common/Either';
+import { signupRoutes } from './signup';
 import { AuthFailures } from '../../../core/modules/user/auth/failures';
 import { HTTP_ERRORS } from '../../common/errors';
 
@@ -12,14 +13,19 @@ const email = faker.internet.email();
 
 const signupImpl = jest
   .fn()
-  .mockImplementation(() => Promise.resolve(Either.of(null, token)));
+  .mockImplementation(() => Promise.resolve(Right.of(token)));
 
 describe('Signup routes', () => {
   let server: FastifyInstance;
 
+  beforeEach(() => {
+    jest
+      .spyOn(SignupUseCase.prototype, 'execute')
+      .mockImplementation(signupImpl);
+  });
+
   beforeAll(() => {
-    server = new App([], [signup], {}).getServer();
-    server.signup = { execute: signupImpl };
+    server = new App([], [signupRoutes], {}).getServer();
   });
 
   afterEach(() => {
@@ -47,7 +53,7 @@ describe('Signup routes', () => {
 
     signupImpl.mockRestore();
     signupImpl.mockResolvedValue(
-      Either.of({
+      Left.of({
         type: AuthFailures.UserAlreadyExistsFailure,
       }),
     );
@@ -59,6 +65,7 @@ describe('Signup routes', () => {
     });
 
     const expectedResponse = HTTP_ERRORS[AuthFailures.UserAlreadyExistsFailure];
+
     expect(res.statusCode).toEqual(expectedResponse.code);
     expect(res.json()).toEqual({ message: expectedResponse.message });
   });
