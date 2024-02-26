@@ -2,9 +2,11 @@ import crypto from 'node:crypto';
 import { faker } from '@faker-js/faker';
 import { SignupUseCase } from './signup';
 import { Right } from '../../../common/Either';
+import { UserRepository } from '../infra/userRepository';
 
 const email = faker.internet.email();
 const password = faker.internet.password();
+const id = faker.string.uuid();
 const hash = faker.string.sample();
 const salt = faker.string.sample();
 
@@ -19,19 +21,25 @@ const mockScryptSync = jest.fn().mockImplementation(() => {
   return hashBuf;
 });
 
+const mockSaveUser = jest.fn().mockImplementation((data) => {
+  return Promise.resolve({ id, ...data });
+});
+
 jest.spyOn(crypto, 'randomBytes').mockImplementation(mockRandom);
 jest.spyOn(crypto, 'scryptSync').mockImplementation(mockScryptSync);
+jest.spyOn(UserRepository.prototype, 'save').mockImplementation(mockSaveUser);
 
 describe('Signup', () => {
   let signupUsecase: SignupUseCase;
 
   beforeEach(() => {
-    signupUsecase = new SignupUseCase();
+    signupUsecase = new SignupUseCase(new UserRepository());
   });
 
   afterEach(() => {
     mockRandom.mockReset();
     mockScryptSync.mockReset();
+    mockSaveUser.mockReset();
   });
 
   it('Should sign up user', async () => {
@@ -50,8 +58,16 @@ describe('Signup', () => {
       64,
     );
 
+    expect(mockSaveUser).toHaveBeenCalledTimes(1);
+    expect(mockSaveUser).toHaveBeenCalledWith({
+      email,
+      password: `${hashBuf.toString('hex')}:${saltBuf.toString('hex')}`,
+    });
+
     expect(res).toEqual(
       Right.of({
+        id,
+        email,
         password: `${hashBuf.toString('hex')}:${saltBuf.toString('hex')}`,
       }),
     );

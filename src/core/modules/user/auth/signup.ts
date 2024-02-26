@@ -3,20 +3,27 @@ import { randomBytes, scryptSync } from 'node:crypto';
 import { Right } from '../../../common/Either';
 import { UseCase, PromiseEither } from '../../../common/useCase';
 import { AuthFailures } from './failures';
-import { SignupParams, SignupResult } from './types';
+import { SignupParams } from './types';
+import { UserRepository } from '../infra/userRepository';
+import { User } from '../domain/user';
 
 export class SignupUseCase
-  implements UseCase<SignupParams, AuthFailures, SignupResult>
+  implements UseCase<SignupParams, AuthFailures, User>
 {
-  constructor() {}
+  constructor(private userRepository: UserRepository) {}
+
   async execute({
-    // email,
+    email,
     password,
-  }: SignupParams): PromiseEither<AuthFailures, SignupResult> {
+  }: SignupParams): PromiseEither<AuthFailures, User> {
     const salt = randomBytes(8).toString('hex');
     const hash = scryptSync(password, salt, 64).toString('hex');
-    const hashed = `${hash}:${salt}`;
 
-    return Promise.resolve(Right.of({ password: hashed }));
+    const user = await this.userRepository.save({
+      email,
+      password: `${hash}:${salt}`,
+    });
+
+    return Right.of(user);
   }
 }
