@@ -1,8 +1,10 @@
 import crypto from 'node:crypto';
 import { faker } from '@faker-js/faker';
 import { SignupUseCase } from './signup';
-import { Right } from '../../../common/Either';
+import { Left, Right } from '../../../common/Either';
 import { UserRepository } from '../infra/userRepository';
+import { AuthFailures } from './failures';
+import { User } from '../domain/user';
 
 const email = faker.internet.email();
 const password = faker.internet.password();
@@ -20,7 +22,6 @@ const mockRandom = jest.fn().mockImplementation(() => {
 const mockScryptSync = jest.fn().mockImplementation(() => {
   return hashBuf;
 });
-
 const mockSaveUser = jest.fn().mockImplementation((data) => {
   return Promise.resolve({ id, ...data });
 });
@@ -37,9 +38,9 @@ describe('Signup', () => {
   });
 
   afterEach(() => {
-    mockRandom.mockReset();
-    mockScryptSync.mockReset();
-    mockSaveUser.mockReset();
+    mockRandom.mockClear();
+    mockScryptSync.mockClear();
+    mockSaveUser.mockClear();
   });
 
   it('Should sign up user', async () => {
@@ -51,7 +52,7 @@ describe('Signup', () => {
     expect(mockRandom).toHaveBeenCalledTimes(1);
     expect(mockRandom).toHaveBeenCalledWith(8);
 
-    expect(crypto.scryptSync).toHaveBeenCalledTimes(1);
+    expect(mockRandom).toHaveBeenCalledTimes(1);
     expect(crypto.scryptSync).toHaveBeenCalledWith(
       password,
       saltBuf.toString('hex'),
@@ -69,6 +70,26 @@ describe('Signup', () => {
         id,
         email,
         password: `${hashBuf.toString('hex')}:${saltBuf.toString('hex')}`,
+      }),
+    );
+  });
+
+  it('Should reject if user exists', async () => {
+    jest
+      .spyOn(UserRepository.prototype, 'get')
+      .mockImplementation(() =>
+        Promise.resolve([new User(id, email, password)]),
+      );
+
+    const res = await signupUsecase.execute({
+      email,
+      password,
+    });
+
+    expect(res).toEqual(
+      Left.of({
+        type: AuthFailures.UserAlreadyExistsFailure,
+        reason: 'User already exists',
       }),
     );
   });

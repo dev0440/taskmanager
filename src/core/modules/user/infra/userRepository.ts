@@ -11,4 +11,9 @@ export class UserRepository implements Repository<User> {
 
     return Promise.resolve(user);
   }
+
+  get(data: any): Promise<User[]> {
+    const users = this.store.filter((user) => user.getEmail() === data.email);
+    return Promise.resolve(users);
+  }
 }

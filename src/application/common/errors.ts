@@ -1,4 +1,4 @@
-import { Failure } from '../../core/common/errors';
+import { IFailure } from '../../core/common/errors';
 import { AuthFailures } from '../../core/modules/user/auth/failures';
 
 interface HttpErrorResponse {
@@ -32,7 +32,7 @@ export class HttpErrorFormatter {
     this.httpErrors = HTTP_ERRORS;
   }
 
-  of(failure: Failure<AllFailures>): HttpErrorResponse {
+  of(failure: IFailure<AllFailures>): HttpErrorResponse {
     if (this.httpErrors[failure.type]) {
       return this.httpErrors[failure.type];
     }

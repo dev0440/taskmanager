@@ -1,4 +1,4 @@
-export interface Failure<FailureType extends string> {
+export interface IFailure<FailureType extends string> {
   type: FailureType;
   reason: string;
 }

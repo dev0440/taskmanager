@@ -1,8 +1,10 @@
 import { Either } from './Either';
-import { Failure } from './errors';
+import { IFailure } from './errors';
 
 export interface UseCase<Params, Failures extends string, Result> {
-  execute(params: Params): Promise<Either<Failure<Failures>, Result>>;
+  execute(params: Params): Promise<Either<IFailure<Failures>, Result>>;
 }
 
-export type PromiseEither<L extends string, R> = Promise<Either<Failure<L>, R>>;
+export type PromiseEither<L extends string, R> = Promise<
+  Either<IFailure<L>, R>
+>;

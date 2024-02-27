@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { SignupUseCase } from '../../../core/modules/user/auth/signup';
 import { SignupParams } from '../../../core/modules/user/auth/types';
+import { UserRepository } from '../../../core/modules/user/infra/userRepository';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -15,7 +16,7 @@ export function signupRoutes(
   __: FastifyPluginOptions,
   done: () => void,
 ) {
-  fastify.decorate('auth', { signup: new SignupUseCase() });
+  fastify.decorate('auth', { signup: new SignupUseCase(new UserRepository()) });
 
   fastify.route<{
     Body: SignupParams;

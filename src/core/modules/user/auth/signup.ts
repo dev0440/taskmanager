@@ -1,6 +1,6 @@
 import { randomBytes, scryptSync } from 'node:crypto';
 
-import { Right } from '../../../common/Either';
+import { Left, Right } from '../../../common/Either';
 import { UseCase, PromiseEither } from '../../../common/useCase';
 import { AuthFailures } from './failures';
 import { SignupParams } from './types';
@@ -16,6 +16,15 @@ export class SignupUseCase
     email,
     password,
   }: SignupParams): PromiseEither<AuthFailures, User> {
+    const users = await this.userRepository.get({ email });
+
+    if (users.length > 0) {
+      return Left.of({
+        type: AuthFailures.UserAlreadyExistsFailure,
+        reason: 'User already exists',
+      });
+    }
+
     const salt = randomBytes(8).toString('hex');
     const hash = scryptSync(password, salt, 64).toString('hex');
 

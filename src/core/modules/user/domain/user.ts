@@ -8,4 +8,7 @@ export class User implements IUser {
   ) {
     console.log(`User with ${email} created`);
   }
+  getEmail(): string {
+    return this.email;
+  }
 }
