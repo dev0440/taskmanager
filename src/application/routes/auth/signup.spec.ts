@@ -19,13 +19,12 @@ const mockError = {
 const signupImpl = jest
   .fn()
   .mockImplementation(() => Promise.resolve(Right.of(token)));
-
 const mockErrorFormatter = jest.fn().mockImplementation(() => mockError);
 
 describe('Signup routes', () => {
   let server: FastifyInstance;
-  jest.spyOn(SignupUseCase.prototype, 'execute').mockImplementation(signupImpl);
 
+  jest.spyOn(SignupUseCase.prototype, 'execute').mockImplementation(signupImpl);
   jest
     .spyOn(HttpErrorFormatter.prototype, 'of')
     .mockImplementation(mockErrorFormatter);
@@ -56,25 +55,20 @@ describe('Signup routes', () => {
   });
 
   it('should reject signup ', async () => {
-    const body = { email, password };
-
+    const failure = {
+      type: AuthFailures.UserAlreadyExistsFailure,
+    };
     signupImpl.mockRestore();
-    signupImpl.mockResolvedValue(
-      Left.of({
-        type: AuthFailures.UserAlreadyExistsFailure,
-      }),
-    );
+    signupImpl.mockResolvedValue(Left.of(failure));
 
     const res = await server.inject({
       method: 'post',
       path: '/signup',
-      body,
+      body: { email, password },
     });
 
     expect(mockErrorFormatter).toHaveBeenCalledTimes(1);
-    expect(mockErrorFormatter).toHaveBeenCalledWith({
-      type: AuthFailures.UserAlreadyExistsFailure,
-    });
+    expect(mockErrorFormatter).toHaveBeenCalledWith(failure);
 
     expect(res.statusCode).toEqual(mockError.code);
     expect(res.json()).toEqual({ message: mockError.message });
