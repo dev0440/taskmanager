@@ -11,4 +11,7 @@ export class User implements IUser {
   getEmail(): string {
     return this.email;
   }
+  getId(): string {
+    return this.id;
+  }
 }

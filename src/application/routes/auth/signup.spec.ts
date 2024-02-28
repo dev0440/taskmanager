@@ -7,9 +7,9 @@ import { signupRoutes } from './signup';
 import { AuthFailures } from '../../../core/modules/user/auth/failures';
 import { HttpErrorFormatter } from '../../common/errors';
 
-const token = faker.string.sample();
 const password = faker.internet.password();
 const email = faker.internet.email();
+const user = { id: faker.string.uuid(), email };
 
 const mockError = {
   code: 404,
@@ -18,7 +18,7 @@ const mockError = {
 
 const signupImpl = jest
   .fn()
-  .mockImplementation(() => Promise.resolve(Right.of(token)));
+  .mockImplementation(() => Promise.resolve(Right.of(user)));
 const mockErrorFormatter = jest.fn().mockImplementation(() => mockError);
 
 describe('Signup routes', () => {
@@ -50,7 +50,7 @@ describe('Signup routes', () => {
     expect(signupImpl).toHaveBeenCalledWith(body);
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual({
-      token,
+      user,
     });
   });
 

@@ -5,17 +5,21 @@ import { UseCase, PromiseEither } from '../../../common/useCase';
 import { AuthFailures } from './failures';
 import { SignupParams } from './types';
 import { UserRepository } from '../infra/userRepository';
-import { User } from '../domain/user';
+
+export interface UserDto {
+  id: string;
+  email: string;
+}
 
 export class SignupUseCase
-  implements UseCase<SignupParams, AuthFailures, User>
+  implements UseCase<SignupParams, AuthFailures, UserDto>
 {
   constructor(private userRepository: UserRepository) {}
 
   async execute({
     email,
     password,
-  }: SignupParams): PromiseEither<AuthFailures, User> {
+  }: SignupParams): PromiseEither<AuthFailures, UserDto> {
     const users = await this.userRepository.get({ email });
 
     if (users.length > 0) {
@@ -33,6 +37,9 @@ export class SignupUseCase
       password: `${hash}:${salt}`,
     });
 
-    return Right.of(user);
+    return Right.of({
+      id: user.getId(),
+      email: user.getEmail(),
+    });
   }
 }

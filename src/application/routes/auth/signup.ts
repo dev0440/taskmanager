@@ -47,7 +47,7 @@ export function signupRoutes(
         return rep.code(code).send({ message });
       }
 
-      return { token: res.getRight() };
+      return { user: res.getRight() };
     },
   });
   done();
