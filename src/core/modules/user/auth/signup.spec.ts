@@ -47,7 +47,6 @@ describe('Signup', () => {
 
     expect(randomM).toHaveBeenCalledTimes(1);
     expect(randomM).toHaveBeenCalledWith(8);
-    expect(randomM).toHaveBeenCalledTimes(1);
     expect(crypto.scryptSync).toHaveBeenCalledWith(
       password,
       saltBuf.toString('hex'),
@@ -66,7 +65,7 @@ describe('Signup', () => {
     );
   });
 
-  it('Should reject if user exists', async () => {
+  it('Should reject if email duplication', async () => {
     jest
       .spyOn(UserRepository.prototype, 'get')
       .mockImplementation(() =>

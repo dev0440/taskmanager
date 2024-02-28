@@ -7,49 +7,48 @@ import { signupRoutes } from './signup';
 import { AuthFailures } from '../../../core/modules/user/auth/failures';
 import { HttpErrorFormatter } from '../../common/errors';
 
-const password = faker.internet.password();
-const email = faker.internet.email();
-const user = { id: faker.string.uuid(), email };
-
-const mockError = {
+const passwordM = faker.internet.password();
+const emailM = faker.internet.email();
+const userM = { id: faker.string.uuid(), email: emailM };
+const errorM = {
   code: 404,
   message: 'Http error',
 };
 
-const signupImpl = jest
+const signupM = jest
   .fn()
-  .mockImplementation(() => Promise.resolve(Right.of(user)));
-const mockErrorFormatter = jest.fn().mockImplementation(() => mockError);
+  .mockImplementation(() => Promise.resolve(Right.of(userM)));
+const errrorFormatM = jest.fn().mockImplementation(() => errorM);
 
 describe('Signup routes', () => {
   let server: FastifyInstance;
 
-  jest.spyOn(SignupUseCase.prototype, 'execute').mockImplementation(signupImpl);
+  jest.spyOn(SignupUseCase.prototype, 'execute').mockImplementation(signupM);
   jest
     .spyOn(HttpErrorFormatter.prototype, 'of')
-    .mockImplementation(mockErrorFormatter);
+    .mockImplementation(errrorFormatM);
 
   beforeEach(() => {
     server = new App([], [signupRoutes], {}).getServer();
   });
 
   afterEach(() => {
-    signupImpl.mockClear();
-    mockErrorFormatter.mockClear();
+    signupM.mockClear();
+    errrorFormatM.mockClear();
   });
 
   it('should signup user', async () => {
-    const body = { email, password };
+    const body = { email: emailM, password: passwordM };
     const res = await server.inject({
       method: 'post',
       path: '/signup',
       body,
     });
 
-    expect(signupImpl).toHaveBeenCalledWith(body);
+    expect(signupM).toHaveBeenCalledWith(body);
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual({
-      user,
+      user: userM,
     });
   });
 
@@ -57,17 +56,17 @@ describe('Signup routes', () => {
     const failure = {
       type: AuthFailures.UserAlreadyExistsFailure,
     };
-    signupImpl.mockRestore();
-    signupImpl.mockResolvedValue(Left.of(failure));
+    signupM.mockRestore();
+    signupM.mockResolvedValue(Left.of(failure));
     const res = await server.inject({
       method: 'post',
       path: '/signup',
-      body: { email, password },
+      body: { email: emailM, password: passwordM },
     });
 
-    expect(mockErrorFormatter).toHaveBeenCalledTimes(1);
-    expect(mockErrorFormatter).toHaveBeenCalledWith(failure);
-    expect(res.statusCode).toEqual(mockError.code);
-    expect(res.json()).toEqual({ message: mockError.message });
+    expect(errrorFormatM).toHaveBeenCalledTimes(1);
+    expect(errrorFormatM).toHaveBeenCalledWith(failure);
+    expect(res.statusCode).toEqual(errorM.code);
+    expect(res.json()).toEqual({ message: errorM.message });
   });
 });

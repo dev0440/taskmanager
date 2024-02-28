@@ -1,6 +1,4 @@
-import { IUser } from './types';
-
-export class User implements IUser {
+export class User {
   constructor(
     public id: string,
     public email: string,
