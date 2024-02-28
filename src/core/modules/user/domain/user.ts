@@ -2,8 +2,8 @@ import { IUser } from './types';
 
 export class User implements IUser {
   constructor(
-    private id: string,
-    private email: string,
+    public id: string,
+    public email: string,
     private password: string,
   ) {
     console.log(`User with ${email} created`);

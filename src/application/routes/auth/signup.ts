@@ -17,7 +17,6 @@ export function signupRoutes(
   done: () => void,
 ) {
   fastify.decorate('auth', { signup: new SignupUseCase(new UserRepository()) });
-
   fastify.route<{
     Body: SignupParams;
   }>({
@@ -39,14 +38,11 @@ export function signupRoutes(
     },
     handler: async (req, rep) => {
       const { email, password } = req.body;
-
       const res = await fastify.auth.signup.execute({ email, password });
-
       if (res.isLeft()) {
         const { code, message } = rep.errorFormatter.of(res.getLeft()!);
         return rep.code(code).send({ message });
       }
-
       return { user: res.getRight() };
     },
   });

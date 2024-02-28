@@ -40,7 +40,6 @@ describe('Signup routes', () => {
 
   it('should signup user', async () => {
     const body = { email, password };
-
     const res = await server.inject({
       method: 'post',
       path: '/signup',
@@ -60,7 +59,6 @@ describe('Signup routes', () => {
     };
     signupImpl.mockRestore();
     signupImpl.mockResolvedValue(Left.of(failure));
-
     const res = await server.inject({
       method: 'post',
       path: '/signup',
@@ -69,7 +67,6 @@ describe('Signup routes', () => {
 
     expect(mockErrorFormatter).toHaveBeenCalledTimes(1);
     expect(mockErrorFormatter).toHaveBeenCalledWith(failure);
-
     expect(res.statusCode).toEqual(mockError.code);
     expect(res.json()).toEqual({ message: mockError.message });
   });

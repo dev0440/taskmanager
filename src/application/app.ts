@@ -16,9 +16,7 @@ export class App {
     options: FastifyServerOptions,
   ) {
     this.server = Fastify(options);
-
     this.applyDecorators();
-
     for (const plugin of plugins) {
       this.server.register(plugin);
     }

@@ -11,36 +11,32 @@ const password = faker.internet.password();
 const id = faker.string.uuid();
 const hash = faker.string.sample();
 const salt = faker.string.sample();
-
 const saltBuf = Buffer.from(salt);
 const hashBuf = Buffer.from(hash);
 
-const mockRandom = jest.fn().mockImplementation(() => {
+const randomM = jest.fn().mockImplementation(() => {
   return saltBuf;
 });
-
-const mockScryptSync = jest.fn().mockImplementation(() => {
+const scryptSyncM = jest.fn().mockImplementation(() => {
   return hashBuf;
 });
-const mockSaveUser = jest.fn().mockImplementation((data) => {
+const saveUserM = jest.fn().mockImplementation((data) => {
   return Promise.resolve({ id, ...data });
 });
 
-jest.spyOn(crypto, 'randomBytes').mockImplementation(mockRandom);
-jest.spyOn(crypto, 'scryptSync').mockImplementation(mockScryptSync);
-jest.spyOn(UserRepository.prototype, 'save').mockImplementation(mockSaveUser);
+jest.spyOn(crypto, 'randomBytes').mockImplementation(randomM);
+jest.spyOn(crypto, 'scryptSync').mockImplementation(scryptSyncM);
+jest.spyOn(UserRepository.prototype, 'save').mockImplementation(saveUserM);
 
 describe('Signup', () => {
   let signupUsecase: SignupUseCase;
-
   beforeEach(() => {
     signupUsecase = new SignupUseCase(new UserRepository());
   });
-
   afterEach(() => {
-    mockRandom.mockClear();
-    mockScryptSync.mockClear();
-    mockSaveUser.mockClear();
+    randomM.mockClear();
+    scryptSyncM.mockClear();
+    saveUserM.mockClear();
   });
 
   it('Should sign up user', async () => {
@@ -49,27 +45,23 @@ describe('Signup', () => {
       password,
     });
 
-    expect(mockRandom).toHaveBeenCalledTimes(1);
-    expect(mockRandom).toHaveBeenCalledWith(8);
-
-    expect(mockRandom).toHaveBeenCalledTimes(1);
+    expect(randomM).toHaveBeenCalledTimes(1);
+    expect(randomM).toHaveBeenCalledWith(8);
+    expect(randomM).toHaveBeenCalledTimes(1);
     expect(crypto.scryptSync).toHaveBeenCalledWith(
       password,
       saltBuf.toString('hex'),
       64,
     );
-
-    expect(mockSaveUser).toHaveBeenCalledTimes(1);
-    expect(mockSaveUser).toHaveBeenCalledWith({
+    expect(saveUserM).toHaveBeenCalledTimes(1);
+    expect(saveUserM).toHaveBeenCalledWith({
       email,
       password: `${hashBuf.toString('hex')}:${saltBuf.toString('hex')}`,
     });
-
     expect(res).toEqual(
       Right.of({
         id,
         email,
-        password: `${hashBuf.toString('hex')}:${saltBuf.toString('hex')}`,
       }),
     );
   });
@@ -80,7 +72,6 @@ describe('Signup', () => {
       .mockImplementation(() =>
         Promise.resolve([new User(id, email, password)]),
       );
-
     const res = await signupUsecase.execute({
       email,
       password,
