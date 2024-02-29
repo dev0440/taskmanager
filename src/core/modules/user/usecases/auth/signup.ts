@@ -1,10 +1,10 @@
 import { randomBytes, scryptSync } from 'node:crypto';
 
-import { Left, Right } from '../../../common/Either';
-import { UseCase, PromiseEither } from '../../../common/useCase';
+import { Left, Right } from '../../../../common/Either';
+import { UseCase, PromiseEither } from '../../../../common/useCase';
 import { AuthFailures } from './failures';
 import { SignupParams } from './types';
-import { UserRepository } from '../infra/userRepository';
+import { UserRepository } from '../../infra/userRepository';
 
 export interface UserDto {
   id: string;

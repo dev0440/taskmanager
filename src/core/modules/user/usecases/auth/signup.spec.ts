@@ -1,10 +1,10 @@
 import crypto from 'node:crypto';
 import { faker } from '@faker-js/faker';
 import { SignupUseCase } from './signup';
-import { Left, Right } from '../../../common/Either';
-import { UserRepository } from '../infra/userRepository';
+import { Left, Right } from '../../../../common/Either';
+import { UserRepository } from '../../infra/userRepository';
 import { AuthFailures } from './failures';
-import { User } from '../domain/user';
+import { User } from '../../domain/user';
 
 const email = faker.internet.email();
 const password = faker.internet.password();

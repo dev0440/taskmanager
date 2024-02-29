@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { SignupUseCase } from '../../../core/modules/user/auth/signup';
+import { SignupUseCase } from '../../../core/modules/user/usecases/auth/signup';
 import { App } from '../../app';
 import { FastifyInstance } from 'fastify';
 import { Left, Right } from '../../../core/common/Either';
 import { signupRoutes } from './signup';
-import { AuthFailures } from '../../../core/modules/user/auth/failures';
+import { AuthFailures } from '../../../core/modules/user/usecases/auth/failures';
 import { HttpErrorFormatter } from '../../common/errors';
 
 const passwordM = faker.internet.password();

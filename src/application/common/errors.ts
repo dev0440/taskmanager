@@ -1,5 +1,5 @@
 import { IFailure } from '../../core/common/errors';
-import { AuthFailures } from '../../core/modules/user/auth/failures';
+import { AuthFailures } from '../../core/modules/user/usecases/auth/failures';
 
 interface HttpErrorResponse {
   code: number;

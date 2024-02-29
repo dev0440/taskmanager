@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { SignupUseCase } from '../../../core/modules/user/auth/signup';
-import { SignupParams } from '../../../core/modules/user/auth/types';
+import { SignupUseCase } from '../../../core/modules/user/usecases/auth/signup';
+import { SignupParams } from '../../../core/modules/user/usecases/auth/types';
 import { UserRepository } from '../../../core/modules/user/infra/userRepository';
 
 declare module 'fastify' {
