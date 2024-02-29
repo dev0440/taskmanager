@@ -6,6 +6,7 @@ import { Left, Right } from '../../../core/common/Either';
 import { signupRoutes } from './signup';
 import { AuthFailures } from '../../../core/modules/user/usecases/auth/failures';
 import { HttpErrorFormatter } from '../../common/errors';
+import { bodySchema } from './schemas';
 
 const passwordM = faker.internet.password();
 const emailM = faker.internet.email();
@@ -15,6 +16,8 @@ const errorM = {
   message: 'Not found',
 };
 
+const validatorM = jest.fn();
+const validatorCompilerM = jest.fn().mockImplementation(() => validatorM);
 const signupM = jest
   .fn()
   .mockImplementation(() => Promise.resolve(Right.of(userM)));
@@ -30,21 +33,33 @@ describe('Signup routes', () => {
 
   beforeEach(() => {
     server = new App([], [signupRoutes], {}).getServer();
+    server.setValidatorCompiler(validatorCompilerM);
   });
 
   afterEach(() => {
     signupM.mockClear();
     errrorFormatM.mockClear();
+    validatorCompilerM.mockClear();
+    validatorM.mockClear();
   });
 
   it('should signup user', async () => {
     const body = { email: emailM, password: passwordM };
     const res = await server.inject({
-      method: 'post',
+      method: 'POST',
       path: '/signup',
       body,
     });
 
+    expect(validatorCompilerM).toHaveBeenCalledTimes(1);
+    expect(validatorCompilerM).toHaveBeenCalledWith({
+      schema: bodySchema,
+      method: 'POST',
+      url: '/signup',
+      httpPart: 'body',
+    });
+    expect(validatorM).toHaveBeenCalledTimes(1);
+    expect(validatorM).toHaveBeenCalledWith(body);
     expect(signupM).toHaveBeenCalledWith(body);
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual({

@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { SignupUseCase } from '../../../core/modules/user/usecases/auth/signup';
 import { SignupParams } from '../../../core/modules/user/usecases/auth/types';
 import { UserRepository } from '../../../core/modules/user/infra/userRepository';
+import { bodySchema } from './schemas';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -23,20 +24,7 @@ export function signupRoutes(
     url: '/signup',
     method: 'POST',
     schema: {
-      body: {
-        type: 'object',
-        properties: {
-          password: {
-            type: 'string',
-            minLength: 8,
-          },
-          email: {
-            type: 'string',
-            format: 'email',
-          },
-        },
-        required: ['password', 'email'],
-      },
+      body: bodySchema,
     },
     handler: async (req, rep) => {
       const { email, password } = req.body;
