@@ -1,20 +1,23 @@
 import { IFailure } from '../../core/common/errors';
 import { AuthFailures } from '../../core/modules/user/usecases/auth/failures';
 
-interface HttpErrorResponse {
-  code: number;
-  message: string;
+interface HttpErrorObject {
+  statusCode: number;
+  error: string;
+  code?: string;
+  message?: string;
 }
 
 type AllFailures = AuthFailures;
 
 type HttpErrors = {
-  [key in AllFailures]: HttpErrorResponse;
+  [key in AllFailures]: HttpErrorObject;
 };
 
 export const HTTP_ERRORS = {
   [AuthFailures.UserAlreadyExistsFailure]: {
-    code: 409,
+    statusCode: 409,
+    error: 'Conflict',
     message: 'User already exists',
   },
 };
@@ -32,13 +35,13 @@ export class HttpErrorFormatter {
     this.httpErrors = HTTP_ERRORS;
   }
 
-  of(failure: IFailure<AllFailures>): HttpErrorResponse {
+  of(failure: IFailure<AllFailures>): HttpErrorObject {
     if (this.httpErrors[failure.type]) {
       return this.httpErrors[failure.type];
     }
     return {
-      code: 500,
-      message: 'Internal server error',
+      statusCode: 500,
+      error: 'Internal Server Error',
     };
   }
 }

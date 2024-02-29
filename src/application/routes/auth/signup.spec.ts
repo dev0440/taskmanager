@@ -11,8 +11,8 @@ const passwordM = faker.internet.password();
 const emailM = faker.internet.email();
 const userM = { id: faker.string.uuid(), email: emailM };
 const errorM = {
-  code: 404,
-  message: 'Http error',
+  statusCode: 404,
+  message: 'Not found',
 };
 
 const signupM = jest
@@ -66,7 +66,7 @@ describe('Signup routes', () => {
 
     expect(errrorFormatM).toHaveBeenCalledTimes(1);
     expect(errrorFormatM).toHaveBeenCalledWith(failure);
-    expect(res.statusCode).toEqual(errorM.code);
+    expect(res.statusCode).toEqual(errorM.statusCode);
     expect(res.json()).toEqual({ message: errorM.message });
   });
 });

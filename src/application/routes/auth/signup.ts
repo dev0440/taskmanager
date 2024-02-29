@@ -42,8 +42,8 @@ export function signupRoutes(
       const { email, password } = req.body;
       const res = await fastify.auth.signup.execute({ email, password });
       if (res.isLeft()) {
-        const { code, message } = rep.errorFormatter.of(res.getLeft()!);
-        return rep.code(code).send({ message });
+        const { statusCode, message } = rep.errorFormatter.of(res.getLeft()!);
+        return rep.code(statusCode).send({ message });
       }
       return { user: res.getRight() };
     },
