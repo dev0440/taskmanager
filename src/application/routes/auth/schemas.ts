@@ -12,3 +12,10 @@ export const bodySchema = {
   },
   required: ['password', 'email'],
 };
+
+export const responseSchema = {
+  200: {
+    type: 'object',
+    properties: { email: { type: 'string' }, id: { type: 'string' } },
+  },
+};
