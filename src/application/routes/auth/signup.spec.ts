@@ -29,7 +29,7 @@ describe('Signup routes', () => {
     .mockImplementation(errrorFormatM);
 
   beforeEach(() => {
-    app = AppM.of([], [signupRoutes]);
+    app = AppM.build([], [signupRoutes]);
     app.mockValidator();
   });
 

@@ -11,12 +11,16 @@ export class AppM extends App {
 
   response: { statusCode?: number; json: () => any } = { json() {} };
 
-  static of(
-    plugins: FastifyPluginCallback[],
-    routes: FastifyPluginCallback[],
+  static build(
+    plugins: FastifyPluginCallback[] = [],
+    routes: FastifyPluginCallback[] = [],
     options: FastifyServerOptions = {},
   ) {
     return new AppM(plugins, routes, options);
+  }
+
+  register(plugin: FastifyPluginCallback) {
+    this.server.register(plugin);
   }
 
   mockValidator() {
