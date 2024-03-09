@@ -6,9 +6,7 @@ import { bodySchema, responseSchema } from './schemas';
 
 declare module 'fastify' {
   interface FastifyInstance {
-    auth: {
-      signup: SignupUseCase;
-    };
+    signup: SignupUseCase;
   }
 }
 
@@ -17,7 +15,7 @@ export function signupRoutes(
   __: FastifyPluginOptions,
   done: () => void,
 ) {
-  fastify.decorate('auth', { signup: new SignupUseCase(new UserRepository()) });
+  fastify.decorate('signup', new SignupUseCase(new UserRepository()));
   fastify.route<{
     Body: SignupParams;
   }>({
@@ -29,12 +27,19 @@ export function signupRoutes(
     },
     handler: async (req, rep) => {
       const { email, password } = req.body;
-      const res = await fastify.auth.signup.execute({ email, password });
+      const res = await fastify.signup.execute({ email, password });
       if (res.isLeft()) {
         const { statusCode, message } = rep.errorFormatter.of(res.getLeft()!);
         return rep.code(statusCode).send({ message });
       }
-      return res.getRight();
+      const user = res.getRight();
+      if (user) {
+        const token = fastify.auth.sign({ id: user.id });
+        return rep
+          .code(201)
+          .header('Authorization', `Bearer ${token}`)
+          .send(user);
+      }
     },
   });
   done();

@@ -4,19 +4,25 @@ import {
   InjectOptions,
 } from 'fastify';
 import { App } from '../../app';
+import { OutgoingHttpHeaders } from 'http2';
+import { auth } from '../../plugins/auth/auth';
 
 export class AppM extends App {
   validator = jest.fn();
   serivlizer = jest.fn();
 
-  response: { statusCode?: number; json: () => any } = { json() {} };
+  response: {
+    statusCode?: number;
+    json: () => any;
+    headers: OutgoingHttpHeaders;
+  } = { json() {}, headers: {} };
 
   static build(
     plugins: FastifyPluginCallback[] = [],
     routes: FastifyPluginCallback[] = [],
     options: FastifyServerOptions = {},
   ) {
-    return new AppM(plugins, routes, options);
+    return new AppM([auth], routes, options);
   }
 
   register(plugin: FastifyPluginCallback) {
@@ -44,6 +50,10 @@ export class AppM extends App {
   assertResponse(statusCode: number, body: object) {
     expect(this.response.statusCode).toEqual(statusCode);
     expect(this.response.json()).toEqual(body);
+  }
+
+  assertResponseHeader(headerName: string, headerValue: string) {
+    expect(this.response.headers[headerName]).toEqual(headerValue);
   }
 
   async inject(opts: InjectOptions) {

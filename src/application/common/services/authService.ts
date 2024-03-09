@@ -1,6 +1,6 @@
 import { sign, verify } from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
-import { Either, Left, Right } from '../../../core/common/Either';
+import { Either, Result } from '../../../core/common/Either';
 
 class BaseError<T extends string> extends Error {
   constructor(
@@ -21,12 +21,12 @@ export enum AuthFailures {
   SigningError = 'SigningError',
 }
 
-type AuthError = BaseError<AuthFailures>;
+export type AuthError = BaseError<AuthFailures>;
 
-export class LeftError<T extends string> extends Left<BaseError<T>> {
+export class LeftError<T extends string> extends Either<BaseError<T>, null> {
   constructor(type: T, message: string) {
     const error = new BaseError<T>(type, message);
-    super(error);
+    super(error, null);
   }
 }
 
@@ -36,25 +36,25 @@ export class AuthService {
   static of(secret: string) {
     return new AuthService(secret);
   }
-  sign(payload: JwtPayload): Either<AuthError, string> {
+  sign(payload: JwtPayload): Result<AuthError, string> {
     try {
       const token = sign(payload, this.secret, {
         algorithm: 'RS256',
         expiresIn: '7d',
       });
-      return Right.of(token);
+      return Either.right(token);
     } catch (err: any) {
       return new LeftError(AuthFailures.SigningError, err.message);
     }
   }
 
-  verify(token: string): Either<AuthError, JwtPayload | string> {
+  verify(token: string): Result<AuthError, JwtPayload | string> {
     if (!token) {
       return new LeftError(AuthFailures.MissingToken, 'Missing token');
     }
     try {
       const payload = verify(token, this.secret, { complete: true });
-      return Right.of(payload);
+      return Either.right(payload);
     } catch (err: any) {
       return new LeftError(AuthFailures.InvalidToken, err.message);
     }

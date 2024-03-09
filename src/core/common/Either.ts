@@ -1,60 +1,28 @@
-export abstract class Either<L, R> {
-  abstract getLeft(): L | null;
-  abstract getRight(): R | null;
-  abstract isLeft(): boolean;
-  abstract isRight(): boolean;
-}
-
-export class Right<R> extends Either<null, R> {
-  private value: R;
-
-  constructor(value: R) {
-    super();
-    this.value = value;
+export class Either<L, R> {
+  constructor(
+    private left: L extends null ? null : L,
+    private right: R extends null ? null : R,
+  ) {}
+  getLeft(): L extends null ? null : L {
+    return this.left;
+  }
+  getRight(): R extends null ? null : R {
+    return this.right;
   }
 
-  static of<T>(value: T) {
-    return new Right(value);
-  }
-
-  isRight(): boolean {
-    return true;
-  }
   isLeft(): boolean {
-    return false;
+    return this.right === null;
   }
-
-  getRight(): R {
-    return this.value;
-  }
-  getLeft(): null {
-    return null;
-  }
-}
-
-export class Left<L> extends Either<L, null> {
-  private value: L;
-
-  constructor(value: L) {
-    super();
-    this.value = value;
-  }
-
-  static of<T>(value: T) {
-    return new Left(value);
-  }
-
   isRight(): boolean {
-    return false;
-  }
-  isLeft(): boolean {
-    return true;
+    return this.left === null;
   }
 
-  getRight(): null {
-    return null;
+  static left<T>(left: T extends null ? null : T) {
+    return new Either<T, null>(left, null);
   }
-  getLeft(): L {
-    return this.value;
+  static right<T>(right: T extends null ? null : T) {
+    return new Either<null, T>(null, right);
   }
 }
+
+export type Result<L, R> = Either<L, null> | Either<null, R>;

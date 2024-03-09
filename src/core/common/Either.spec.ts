@@ -1,8 +1,8 @@
-import { Left, Either, Right } from './Either';
+import { Either } from './Either';
 
 describe('Either', () => {
   it('should return left', () => {
-    const either = Left.of(10);
+    const either = Either.left(10);
 
     expect(either).toBeInstanceOf(Either);
     expect(either.isRight()).toEqual(false);
@@ -11,7 +11,7 @@ describe('Either', () => {
     expect(either.getLeft()).toEqual(10);
   });
   it('should return right', () => {
-    const either = Right.of(10);
+    const either = Either.right(10);
 
     expect(either).toBeInstanceOf(Either);
     expect(either.isRight()).toEqual(true);

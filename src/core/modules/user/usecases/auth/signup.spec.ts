@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { faker } from '@faker-js/faker';
 import { SignupUseCase } from './signup';
-import { Left, Right } from '../../../../common/Either';
+import { Either } from '../../../../common/Either';
 import { UserRepository } from '../../infra/userRepository';
 import { AuthFailures } from './failures';
 import { User } from '../../domain/user';
@@ -58,7 +58,7 @@ describe('Signup', () => {
       password: `${hashBuf.toString('hex')}:${saltBuf.toString('hex')}`,
     });
     expect(res).toEqual(
-      Right.of({
+      Either.right({
         id,
         email,
       }),
@@ -77,7 +77,7 @@ describe('Signup', () => {
     });
 
     expect(res).toEqual(
-      Left.of({
+      Either.left({
         type: AuthFailures.UserAlreadyExistsFailure,
         reason: 'User already exists',
       }),

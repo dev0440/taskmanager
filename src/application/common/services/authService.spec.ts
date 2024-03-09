@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import jwt from 'jsonwebtoken';
 import { AuthFailures, AuthService, LeftError } from './authService';
-import { Right } from '../../../core/common/Either';
+import { Either } from '../../../core/common/Either';
 
 const tokenM = faker.string.sample();
 const secretM = faker.string.sample();
@@ -29,7 +29,7 @@ describe('AuthService', () => {
   it('should generate jwt token', () => {
     const res = service.sign(jwtPayoload);
 
-    expect(res).toEqual(Right.of(tokenM));
+    expect(res).toEqual(Either.right(tokenM));
     expect(signM).toHaveBeenCalledTimes(1);
     expect(signM).toHaveBeenCalledWith(jwtPayoload, secretM, {
       expiresIn: '7d',
@@ -61,7 +61,7 @@ describe('AuthService', () => {
     expect(verifyM).toHaveBeenCalledWith(tokenM, secretM, {
       complete: true,
     });
-    expect(res).toEqual(Right.of(jwtPayoload));
+    expect(res).toEqual(Either.right(jwtPayoload));
   });
 
   it('should reject verification', () => {
