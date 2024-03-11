@@ -18,6 +18,7 @@ export class AppM extends App {
   } = { json() {}, headers: {} };
 
   static build(
+    // eslint-disable-next-line
     plugins: FastifyPluginCallback[] = [],
     routes: FastifyPluginCallback[] = [],
     options: FastifyServerOptions = {},
@@ -58,5 +59,6 @@ export class AppM extends App {
 
   async inject(opts: InjectOptions) {
     this.response = await this.server.inject(opts);
+    return this.response;
   }
 }
