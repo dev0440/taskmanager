@@ -3,8 +3,9 @@ import { faker } from '@faker-js/faker';
 import { SignupUseCase } from './signup';
 import { Either } from '../../../../common/Either';
 import { UserRepository } from '../../infra/userRepository';
-import { AuthFailures } from './failures';
+import { AuthErrors } from './errors';
 import { User } from '../../domain/user';
+import { BaseError } from '../../../../common/errors';
 
 const email = faker.internet.email();
 const password = faker.internet.password();
@@ -77,10 +78,9 @@ describe('Signup', () => {
     });
 
     expect(res).toEqual(
-      Either.left({
-        type: AuthFailures.UserAlreadyExistsFailure,
-        reason: 'User already exists',
-      }),
+      Either.left(
+        new BaseError(AuthErrors.UserAlreadyExistsError, 'User alredy exists'),
+      ),
     );
   });
 });

@@ -29,7 +29,7 @@ export function auth(
     if (headers.authorization) {
       const token = parseJWT(headers.authorization);
       if (token) {
-        // const verified = fastify.auth.verify(token);
+        fastify.auth.verify(token);
         return done();
       }
       return res.status(400).send({});
