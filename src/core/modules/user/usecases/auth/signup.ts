@@ -2,9 +2,10 @@ import { randomBytes, scryptSync } from 'node:crypto';
 
 import { Either } from '../../../../common/Either';
 import { UseCase, PromiseEither } from '../../../../common/useCase';
-import { AuthFailures } from './failures';
+import { AuthErrors } from './errors';
 import { SignupParams } from './types';
 import { UserRepository } from '../../infra/userRepository';
+import { BaseError } from '../../../../common/errors';
 
 export interface UserDto {
   id: string;
@@ -12,20 +13,22 @@ export interface UserDto {
 }
 
 export class SignupUseCase
-  implements UseCase<SignupParams, AuthFailures, UserDto>
+  implements UseCase<SignupParams, AuthErrors, UserDto>
 {
   constructor(private userRepository: UserRepository) {}
 
   async execute({
     email,
     password,
-  }: SignupParams): PromiseEither<AuthFailures, UserDto> {
+  }: SignupParams): PromiseEither<AuthErrors, UserDto> {
     const users = await this.userRepository.get({ email });
     if (users.length > 0) {
-      return Either.left({
-        type: AuthFailures.UserAlreadyExistsFailure,
-        reason: 'User already exists',
-      });
+      return Either.left(
+        new BaseError<AuthErrors>(
+          AuthErrors.UserAlreadyExistsError,
+          'User alredy exists',
+        ),
+      );
     }
     const salt = randomBytes(8).toString('hex');
     const hash = scryptSync(password, salt, 64).toString('hex');

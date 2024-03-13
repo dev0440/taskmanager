@@ -5,7 +5,6 @@ import Fastify, {
 } from 'fastify';
 import { signupRoutes } from './routes/auth/signup';
 
-import { HttpErrorFormatter } from './common/errors';
 import { auth } from './plugins/auth/auth';
 
 export class App {
@@ -17,18 +16,15 @@ export class App {
     options: FastifyServerOptions,
   ) {
     this.server = Fastify(options);
-    this.applyDecorators();
     for (const plugin of plugins) {
       this.server.register(plugin);
     }
     for (const route of routes) {
       this.server.register(route);
     }
-  }
-
-  applyDecorators() {
-    const errorFormatter = new HttpErrorFormatter();
-    this.server.decorateReply('errorFormatter', errorFormatter);
+    this.server.setErrorHandler((err, req, res) => {
+      res.code(err.statusCode!).send({ message: err.message });
+    });
   }
 
   getServer() {

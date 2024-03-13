@@ -1,18 +1,7 @@
 import { sign, verify } from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import { Either, Result } from '../../../core/common/Either';
-
-class BaseError<T extends string> extends Error {
-  constructor(
-    public type: T,
-    public message: string,
-  ) {
-    super();
-  }
-  // static of<T extends string>(type: T, message: string) {
-  //   return new BaseError<T>(type, message);
-  // }
-}
+import { BaseError } from '../../../core/common/errors';
 
 export enum AuthFailures {
   InvalidToken = 'InvalidToken',

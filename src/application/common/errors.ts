@@ -1,47 +1,50 @@
-import { IFailure } from '../../core/common/errors';
-import { AuthFailures } from '../../core/modules/user/usecases/auth/failures';
+import { AuthErrors } from '../../core/modules/user/usecases/auth/errors';
 
-interface HttpErrorObject {
-  statusCode: number;
-  error: string;
-  code?: string;
-  message?: string;
+export interface IHttpError {
+  code: string;
+  statusCode?: number;
+  name: string;
+  message: string;
 }
 
-type AllFailures = AuthFailures;
-
-type HttpErrors = {
-  [key in AllFailures]: HttpErrorObject;
-};
-
-export const HTTP_ERRORS = {
-  [AuthFailures.UserAlreadyExistsFailure]: {
+const HTTP_ERRORS: Record<string, IHttpError> = {
+  [AuthErrors.UserAlreadyExistsError]: {
     statusCode: 409,
-    error: 'Conflict',
+    code: 'Auth_Errr',
+    name: 'Auth error',
     message: 'User already exists',
   },
 };
 
-declare module 'fastify' {
-  interface FastifyReply {
-    errorFormatter: HttpErrorFormatter;
+const INTERNAL_SERVER_ERROR = {
+  code: 'code',
+  statusCode: 500,
+  name: 'Internal_Error',
+  message: 'Internal server error',
+};
+
+const getHttpError = (type?: string): IHttpError => {
+  if (!type) {
+    return INTERNAL_SERVER_ERROR;
   }
-}
-
-export class HttpErrorFormatter {
-  private httpErrors: HttpErrors;
-
-  constructor() {
-    this.httpErrors = HTTP_ERRORS;
+  const error = HTTP_ERRORS[type];
+  if (error) {
+    return error;
   }
+  return INTERNAL_SERVER_ERROR;
+};
 
-  of(failure: IFailure<AllFailures>): HttpErrorObject {
-    if (this.httpErrors[failure.type]) {
-      return this.httpErrors[failure.type];
-    }
-    return {
-      statusCode: 500,
-      error: 'Internal Server Error',
-    };
+export class HttpError<T extends string> implements IHttpError {
+  public code: string;
+  public statusCode?: number;
+  public name: string;
+  public message: string;
+
+  constructor(type?: T) {
+    const { code, statusCode, name, message } = getHttpError(type);
+    this.statusCode = statusCode;
+    this.name = name;
+    this.code = code;
+    this.message = message;
   }
 }

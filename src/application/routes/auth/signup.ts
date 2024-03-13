@@ -3,6 +3,7 @@ import { SignupUseCase } from '../../../core/modules/user/usecases/auth/signup';
 import { SignupParams } from '../../../core/modules/user/usecases/auth/types';
 import { UserRepository } from '../../../core/modules/user/infra/userRepository';
 import { bodySchema, responseSchema } from './schemas';
+import { HttpError } from '../../common/errors';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -29,8 +30,8 @@ export function signupRoutes(
       const { email, password } = req.body;
       const res = await fastify.signup.execute({ email, password });
       if (res.isLeft()) {
-        const { statusCode, message } = rep.errorFormatter.of(res.getLeft()!);
-        return rep.code(statusCode).send({ message });
+        const error = res.getLeft();
+        return fastify.errorHandler(new HttpError(error?.type), req, rep);
       }
       const user = res.getRight();
       if (user) {
