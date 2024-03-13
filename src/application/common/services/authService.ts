@@ -1,5 +1,4 @@
-import { sign, verify } from 'jsonwebtoken';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { Either, Result } from '../../../core/common/Either';
 import { BaseError } from '../../../core/common/errors';
 
@@ -25,9 +24,9 @@ export class AuthService {
   static of(secret: string) {
     return new AuthService(secret);
   }
-  sign(payload: JwtPayload): Result<AuthError, string> {
+  sign(payload: jwt.JwtPayload): Result<AuthError, string> {
     try {
-      const token = sign(payload, this.secret, {
+      const token = jwt.sign(payload, this.secret, {
         algorithm: 'RS256',
         expiresIn: '7d',
       });
@@ -37,12 +36,12 @@ export class AuthService {
     }
   }
 
-  verify(token: string): Result<AuthError, JwtPayload | string> {
+  verify(token: string): Result<AuthError, jwt.JwtPayload | string> {
     if (!token) {
       return new LeftError(AuthFailures.MissingToken, 'Missing token');
     }
     try {
-      const payload = verify(token, this.secret, { complete: true });
+      const payload = jwt.verify(token, this.secret, { complete: true });
       return Either.right(payload);
     } catch (err: any) {
       return new LeftError(AuthFailures.InvalidToken, err.message);
