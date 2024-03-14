@@ -70,6 +70,6 @@ describe('Signup routes', () => {
       body: { email: emailM, password: passwordM },
     });
 
-    app.assertResponse(409, { message: 'User already exists' });
+    app.assertResponse(409, { message: 'Email already registered' });
   });
 });

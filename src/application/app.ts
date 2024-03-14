@@ -22,7 +22,7 @@ export class App {
     for (const route of routes) {
       this.server.register(route);
     }
-    this.server.setErrorHandler((err, req, res) => {
+    this.server.setErrorHandler((err, __, res) => {
       res.code(err.statusCode!).send({ message: err.message });
     });
   }
