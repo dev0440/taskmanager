@@ -5,7 +5,7 @@ import { BaseError } from '../../../core/common/errors';
 export enum AuthFailures {
   InvalidToken = 'InvalidToken',
   ExpiredToken = 'ExpiredToken',
-  MissingToken = 'Token',
+  MissingToken = 'MissingToken',
   SigningError = 'SigningError',
 }
 

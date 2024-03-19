@@ -7,8 +7,12 @@ import { BaseError } from '../../../core/common/errors';
 
 const tokenM = faker.string.sample();
 const payloadM = { userId: faker.string.uuid() };
+// const secretM = faker.string.sample();
 
 const verifyM = jest.fn().mockImplementation(() => Either.right(payloadM));
+const authConstructorM = jest
+  .fn()
+  .mockImplementation((secret) => new AuthService(secret));
 const handlerM = jest.fn().mockImplementation((__, res) => {
   res.code().send();
 });
@@ -23,6 +27,7 @@ const getRouteM =
   };
 
 jest.spyOn(AuthService.prototype, 'verify').mockImplementation(verifyM);
+jest.spyOn(AuthService, 'of').mockImplementation(authConstructorM);
 
 describe('Auth plugin', () => {
   let app: AppM;
@@ -45,6 +50,7 @@ describe('Auth plugin', () => {
       body: {},
     });
 
+    expect(authConstructorM).toHaveBeenCalled();
     expect(verifyM).toHaveBeenCalledTimes(1);
     expect(verifyM).toHaveBeenCalledWith(tokenM);
     expect(handlerM).toHaveBeenCalledTimes(1);

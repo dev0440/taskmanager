@@ -1,11 +1,12 @@
 import {
   FastifyPluginCallback,
+  FastifyPluginOptions,
   FastifyServerOptions,
   InjectOptions,
 } from 'fastify';
 import { App } from '../../app';
 import { OutgoingHttpHeaders } from 'http2';
-import { auth } from '../../plugins/auth/auth';
+import { authPlugin } from '../../plugins/auth/auth';
 
 export class AppM extends App {
   validator = jest.fn();
@@ -23,11 +24,11 @@ export class AppM extends App {
     routes: FastifyPluginCallback[] = [],
     options: FastifyServerOptions = {},
   ) {
-    return new AppM([auth], routes, options);
+    return new AppM([authPlugin], routes, options);
   }
 
-  register(plugin: FastifyPluginCallback) {
-    this.server.register(plugin);
+  register(plugin: FastifyPluginCallback, options?: FastifyPluginOptions) {
+    return this.server.register(plugin, options);
   }
 
   mockValidator() {

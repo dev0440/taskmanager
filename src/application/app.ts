@@ -5,7 +5,8 @@ import Fastify, {
 } from 'fastify';
 import { signupRoutes } from './routes/auth/signup';
 
-import { auth } from './plugins/auth/auth';
+import { authPlugin } from './plugins/auth/auth';
+import { configsPlugin } from './plugins/config/config';
 
 export class App {
   server: FastifyInstance;
@@ -33,7 +34,7 @@ export class App {
 }
 
 export function build() {
-  const app = new App([auth], [signupRoutes], {
+  const app = new App([configsPlugin, authPlugin], [signupRoutes], {
     logger: {
       level: 'info',
     },

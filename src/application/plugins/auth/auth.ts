@@ -47,10 +47,9 @@ class AuthHttpError extends HttpError {
 }
 
 const isPublic = (url: string, method: string) => {
-  console.log(url, method);
   return url === '/signup' && method === 'POST';
 };
-export function auth(
+export function authPlugin(
   fastify: FastifyInstance,
   __: FastifyPluginOptions,
   done: () => void,
@@ -79,4 +78,4 @@ export function auth(
   done();
 }
 
-auth[overrideSymbol] = true;
+authPlugin[overrideSymbol] = true;
