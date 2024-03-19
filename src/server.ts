@@ -1,16 +1,6 @@
-import Fastify from 'fastify';
+import { build } from './application/app.js';
 
-const app = Fastify({
-  logger: {
-    level: 'info',
-  },
-});
-
-let counter = 0;
-
-app.get('/', (__, res) => {
-  res.send(counter++);
-});
+const app = build();
 
 app.listen({ port: 3000 }, (err, address) => {
   if (err) {
