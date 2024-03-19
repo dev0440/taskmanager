@@ -54,7 +54,8 @@ export function authPlugin(
   __: FastifyPluginOptions,
   done: () => void,
 ) {
-  const authService = AuthService.of('secret');
+  const configs = fastify.config;
+  const authService = AuthService.of(configs.secret);
 
   fastify.decorate('auth', authService);
   fastify.addHook('onRequest', (req, __, done) => {

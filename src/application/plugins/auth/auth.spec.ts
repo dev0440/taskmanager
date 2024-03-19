@@ -4,10 +4,11 @@ import { AuthFailures, AuthService } from '../../common/services/authService';
 import { Either } from '../../../core/common/Either';
 import { FastifyInstance, HTTPMethods } from 'fastify';
 import { BaseError } from '../../../core/common/errors';
+import { authPlugin } from './auth';
 
 const tokenM = faker.string.sample();
 const payloadM = { userId: faker.string.uuid() };
-// const secretM = faker.string.sample();
+const secretM = faker.string.sample();
 
 const verifyM = jest.fn().mockImplementation(() => Either.right(payloadM));
 const authConstructorM = jest
@@ -34,7 +35,7 @@ describe('Auth plugin', () => {
 
   beforeEach(() => {
     const routes = getRouteM();
-    app = AppM.build([], [routes]);
+    app = AppM.build([authPlugin], [routes], { secret: secretM });
   });
 
   afterEach(() => {
@@ -50,7 +51,7 @@ describe('Auth plugin', () => {
       body: {},
     });
 
-    expect(authConstructorM).toHaveBeenCalled();
+    expect(authConstructorM).toHaveBeenCalledWith(secretM);
     expect(verifyM).toHaveBeenCalledTimes(1);
     expect(verifyM).toHaveBeenCalledWith(tokenM);
     expect(handlerM).toHaveBeenCalledTimes(1);

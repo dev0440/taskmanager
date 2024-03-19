@@ -1,11 +1,13 @@
 import fastifyEnv from '@fastify/env';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
+export interface Config {
+  secret: string;
+}
+
 declare module 'fastify' {
   interface FastifyInstance {
-    config: {
-      secret: string;
-    };
+    config: Config;
   }
 }
 

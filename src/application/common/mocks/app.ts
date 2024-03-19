@@ -1,12 +1,11 @@
 import {
   FastifyPluginCallback,
   FastifyPluginOptions,
-  FastifyServerOptions,
   InjectOptions,
 } from 'fastify';
 import { App } from '../../app';
 import { OutgoingHttpHeaders } from 'http2';
-import { authPlugin } from '../../plugins/auth/auth';
+import { Config } from '../../plugins/config/config';
 
 export class AppM extends App {
   validator = jest.fn();
@@ -19,12 +18,15 @@ export class AppM extends App {
   } = { json() {}, headers: {} };
 
   static build(
-    // eslint-disable-next-line
     plugins: FastifyPluginCallback[] = [],
     routes: FastifyPluginCallback[] = [],
-    options: FastifyServerOptions = {},
+    config?: Config,
   ) {
-    return new AppM([authPlugin], routes, options);
+    const app = new AppM(plugins, routes, {});
+    if (config) {
+      app.getServer().config = config;
+    }
+    return app;
   }
 
   register(plugin: FastifyPluginCallback, options?: FastifyPluginOptions) {

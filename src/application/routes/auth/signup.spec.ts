@@ -7,11 +7,13 @@ import { AppM } from '../../common/mocks/app';
 import { bodySchema } from './schemas';
 import { AuthService } from '../../common/services/authService';
 import { BaseError } from '../../../core/common/errors';
+import { authPlugin } from '../../plugins/auth/auth';
 
 const passwordM = faker.internet.password();
 const emailM = faker.internet.email();
 const userM = { id: faker.string.uuid(), email: emailM };
 const tokenM = faker.string.sample();
+const secretM = faker.string.sample();
 
 const signM = jest.fn().mockImplementation(() => tokenM);
 const signupM = jest
@@ -25,7 +27,7 @@ describe('Signup routes', () => {
   jest.spyOn(AuthService.prototype, 'sign').mockImplementation(signM);
 
   beforeEach(() => {
-    app = AppM.build([], [signupRoutes]);
+    app = AppM.build([authPlugin], [signupRoutes], { secret: secretM });
     app.mockValidator();
   });
 
